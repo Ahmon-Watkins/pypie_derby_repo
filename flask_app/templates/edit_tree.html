@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+    <title>Re-plant Your Tree</title>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <h1>Arbortrary</h1>
+            <p>A site to track randomly planted trees</p>
+        </div>
+        <div class="navbar-links">
+            <a href="/my_trees/{{ session['user_id'] }}">
+                <button class="btn btn-secondary">My Trees</button>
+            </a>
+            {% for user in user %}
+            <h2>Welcome, {{ user.first_name }}</h2>
+            {% endfor %}
+        </div>
+        <div class="navbar-links">
+            <a href="/dashboard/{{ session['user_id'] }}">
+                <button class="btn btn-secondary">Dashboard</button>
+            </a>
+            <a href="/">
+                <button class="btn btn-secondary">Logout</button>
+            </a>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h2 class="mb-4">Re-plant Your Tree</h2>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for message in messages %}
+            <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="/edit/{{ tree.id }}">
+            <label for="species">Species:</label>
+            <input type="text" class="form-control" name="species" value="{{ tree.species }}" required>
+            <br>
+            <label for="location">Location:</label>
+            <input type="text" class="form-control" name="location" value="{{ tree.location }}" required>
+            <br>
+            <label for="reason">Reason:</label>
+            <textarea class="form-control" name="reason" required>{{ tree.reason }}</textarea>
+            <br>
+            <label for="date_planted">Date Planted:</label>
+            <input type="date" class="form-control" name="date_planted" value="{{ tree.date_planted }}" required>
+            <br>
+            <button type="submit" class="btn btn-primary">Update</button>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

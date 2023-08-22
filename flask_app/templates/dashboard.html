@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+    <title>Dashboard</title>
+</head>
+
+<body>
+    <div>
+        <nav class="navbar">
+            <div class="navbar-brand">
+                <h1>Arbortrary</h1>
+                <p>A site to track randomly planted trees</p>
+            </div>
+            <div class="navbar-links">
+                <a href="/my_trees/{{ session['user_id'] }}">
+                    <button class="btn btn-secondary">My Trees</button>
+                </a>
+                {% for user in user %}
+                <h2>Welcome, {{ user.first_name }}</h2>
+                {% endfor %}
+            </div>
+            <div class="navbar-links">
+                <a href="/new/tree">
+                    <button class="btn btn-primary">Plant a tree</button>
+                </a>
+                <a href="/">
+                    <button class="btn btn-secondary">Logout</button>
+                </a>
+            </div>
+        </nav>
+
+        <br>
+        <div class="wall container">
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div class="flash-messages">
+                {% for message in messages %}
+                <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Species</th>
+                        <th>Planted By</th>
+                        <th>Visitors</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for one_tree in all_the_trees %}
+                    <tr>
+                        <td>{{ one_tree.species }}</td>
+                        <td>{{ one_tree.creator.first_name }} {{ one_tree.creator.last_name }}</td>
+                        <td>{{ visit_counts[one_tree.id] }}</td>
+                        <td>
+                            <a href="/show/{{ one_tree.id }}">
+                                <button class="btn btn-secondary">Details</button>
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4">No posts available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+
+</html>

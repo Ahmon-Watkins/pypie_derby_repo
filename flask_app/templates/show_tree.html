@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+    <title>View Tree</title>
+</head>
+
+<body>
+    <div>
+        <nav class="navbar">
+            <div class="navbar-brand">
+                <h1>Arbortrary</h1>
+                <p>A site to track randomly planted trees</p>
+            </div>
+            <div class="navbar-links">
+                <a href="/my_trees/{{ session['user_id'] }}">
+                    <button class="btn btn-secondary">My Trees</button>
+                </a>
+                {% for user in user %}
+                <h2>Welcome, {{ user.first_name }}</h2>
+                {% endfor %}
+            </div>
+            <div class="navbar-links">
+                <a href="/dashboard/{{ session['user_id'] }}">
+                    <button class="btn btn-secondary">Dashboard</button>
+                </a>
+                <a href="/">
+                    <button class="btn btn-secondary">Logout</button>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="container flash-messages">
+        {% for message in messages %}
+        <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <div class="container mt-4">
+        <h5 class="mb-2"><strong>{{ tree.species }} planted by {{ tree.creator.first_name }} {{ tree.creator.last_name }}</strong></h5>
+        <p><strong>Where:</strong> {{ tree.location }}</p>
+        <p><strong>When:</strong> {{ tree.date_planted }}</p>
+        <p><strong>Reason:</strong> {{ tree.reason }}</p>
+    </div>
+
+    {% if session.user_id != tree.creator.id %}
+    <div class="container mt-4">
+        <h3>Visited by:</h3>
+        <ul>
+            {% for visit in visits %}
+            <li>{{ visit.first_name }} {{ visit.last_name }}</li>
+            {% endfor %}
+        </ul>
+        <form method="POST" action="/add_visit/{{ tree.id }}">
+            <button type="submit" class="btn btn-primary">I visited this tree!</button>
+        </form>
+    </div>
+    <div class="container mt-2">
+        {% if not user_visited %}
+        <form method="POST" action="/remove_visit/{{ tree.id }}">
+            <button type="submit" class="btn btn-secondary">Actually I don't think I did.</button>
+        </form>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>
