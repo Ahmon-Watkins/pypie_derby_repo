@@ -3,26 +3,25 @@ from flask_app.config.mysqlconnection import connectToMySQL
 from flask_app.models.user import User
 from flask import flash
 
-class Tree:
+class Pie:
     DB = 'exam_schema'
     def __init__(self, data):
         self.id = data['id']
         self.user_id = data['user_id']
-        self.species = data['species']
-        self.location = data['location']
-        self.reason = data['reason']
-        self.date_planted = data['date_planted']
+        self.name = data['name']
+        self.filling = data['filling']
+        self.crust = data['crust']
         self.created_at = data['created_at']
         self.updated_at = data['updated_at']
         self.creator = None
-        self.visits = None
+        self.votes = None
         #self.comments=None
 #Create
     @classmethod
-    def create_tree(cls, data):
+    def create_pie(cls, data):
         query = """
-                    INSERT INTO trees (user_id, species, location, reason, date_planted) 
-                    VALUES ( %(user_id)s,  %(species)s, %(location)s, %(reason)s, %(date_planted)s);
+                    INSERT INTO pies (user_id, name, filling, crust) 
+                    VALUES ( %(user_id)s,  %(name)s, %(filling)s, %(crust)s);
         
         """
         # data is a dictionary that will be passed into the save method from server.py
@@ -30,37 +29,33 @@ class Tree:
         return connectToMySQL(cls.DB).query_db(query, data)
     
     @staticmethod
-    def validate_tree(data):
+    def validate_pie(data):
         is_valid = True  # We assume this is true
         
-        if len(data['species']) < 5:
-            flash("Species is required.")
+        if len(data['name']) < 3:
+            flash("Name is required.")
             is_valid = False
-        if len(data['location']) < 2:
-            flash("Location is required.")
+        if len(data['filling']) < 3:
+            flash("Filling is required.")
             is_valid = False
-        if len(data['reason']) < 50:
-            flash("A reason for planting must be 50 characters. Put some thought into it!")
-            is_valid = False
-        if not data['date_planted']:
-            flash("Date planted is required.")
+        if len(data['crust']) < 3:
+            flash("A crust is required")
             is_valid = False
 
-        
         return is_valid
 # #READ
 #             #This is not a normal one to many route this will select all and is good for posting to a wall.
     @classmethod
-    def get_all_trees_with_creator(cls):
+    def get_all_pies_with_creator(cls):
             # Get all tweets, and their one associated User that created it
-            query = "SELECT * FROM trees JOIN users ON trees.user_id = users.id;"
+            query = "SELECT * FROM pies JOIN users ON pies.user_id = users.id;"
             results = connectToMySQL(cls.DB).query_db(query)
-            all_trees = []
+            all_pies = []
             for row in results:
                 # Create a Tweet class instance from the information from each db row
-                one_tree = cls(row)
+                one_pie = cls(row)
                 # Prepare to make a User class instance, looking at the class in models/user.py
-                one_trees_author_info = {
+                one_pies_author_info = {
                     # Any fields that are used in BOTH tables will have their name changed, which depends on the order you put them in the JOIN query, use a print statement in your classmethod to show this.
                     "id": row['users.id'], 
                     "first_name": row['first_name'],
@@ -71,74 +66,73 @@ class Tree:
                     "updated_at": row['updated_at']
                 }
                 # Create the User class instance that's in the user.py model file
-                author = User(one_trees_author_info)
+                author = User(one_pies_author_info)
                 # Associate the Tweet class instance with the User class instance by filling in the empty creator attribute in the Tweet class
-                one_tree.creator = author
+                one_pie.creator = author
                 # Append the Tweet containing the associated User to your list of tweets
-                all_trees.append(one_tree)
-            return all_trees
+                all_pies.append(one_pie)
+            return all_pies
     @classmethod
-    def get_tree_by_id_with_creator(cls, tree_id):
+    def get_pie_by_id_with_creator(cls, pie_id):
         query = """
-            SELECT * FROM trees 
-            JOIN users ON trees.user_id = users.id 
-            WHERE trees.id = %(tree_id)s;
+            SELECT * FROM pies 
+            JOIN users ON pies.user_id = users.id 
+            WHERE pies.id = %(pie_id)s;
         """
-        data = {"tree_id": tree_id}
+        data = {"pie_id": pie_id}
         result = connectToMySQL(cls.DB).query_db(query, data)
         
         if result:
-            tree_data = result[0]
+            pie_data = result[0]
             creator_data = {
-                "id": tree_data['users.id'],
-                "first_name": tree_data['first_name'],
-                "last_name": tree_data['last_name'],
-                "email": tree_data['email'],
-                "password": tree_data['password'],
-                "created_at": tree_data['created_at'],
-                "updated_at": tree_data['updated_at']
+                "id": pie_data['users.id'],
+                "first_name": pie_data['first_name'],
+                "last_name": pie_data['last_name'],
+                "email": pie_data['email'],
+                "password": pie_data['password'],
+                "created_at": pie_data['created_at'],
+                "updated_at": pie_data['updated_at']
             }
             creator = User(creator_data)
             
-            tree = cls(tree_data)  # Create a tree instance
-            tree.creator = creator  # Associate the creator User instance with the tree
-            return tree
+            pie = cls(pie_data)  # Create a pie instance
+            pie.creator = creator  # Associate the creator User instance with the pie
+            return pie
         else:
             return None
     @classmethod
-    def get_trees_by_user_id(cls, user_id):
+    def get_pies_by_user_id(cls, user_id):
         query = """
-            SELECT * FROM trees
+            SELECT * FROM pies
             WHERE user_id = %(user_id)s;
         """
         data = {"user_id": user_id}
         result = connectToMySQL(cls.DB).query_db(query, data)
         
-        trees = []
-        for tree_data in result:
-            tree = cls(tree_data)
-            trees.append(tree)
+        pies = []
+        for pie_data in result:
+            pie = cls(pie_data)
+            pies.append(pie)
         
-        return trees
+        return pies
 
 #update
     @classmethod
-    def edit_tree(cls, data):
+    def edit_pie(cls, data):
         query = """
-            UPDATE trees
+            UPDATE pies
             SET 
-                species = %(species)s,
-                location = %(location)s,
-                reason = %(reason)s,
-                date_planted = %(date_planted)s
+                name = %(name)s,
+                filling = %(filling)s,
+                crust = %(crust)s
             WHERE id = %(id)s;
         """
         
         return connectToMySQL(cls.DB).query_db(query, data)
 #delete
     @classmethod
-    def delete_tree(cls, tree_id):
-        query = "DELETE FROM trees WHERE id = %(tree_id)s;"
-        data = {"tree_id": tree_id}
+    def delete_pie(cls, pie_id):
+        query = "DELETE FROM pies WHERE id = %(pie_id)s;"
+        data = {"pie_id": pie_id}
         return connectToMySQL(cls.DB).query_db(query, data)
 

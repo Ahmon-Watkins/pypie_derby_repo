@@ -11,16 +11,7 @@
 <body>
     <nav class="navbar">
         <div class="navbar-brand">
-            <h1>Arbortrary</h1>
-            <p>A site to track randomly planted trees</p>
-        </div>
-        <div class="navbar-links">
-            <a href="/my_trees/{{ session['user_id'] }}">
-                <button class="btn btn-secondary">My Trees</button>
-            </a>
-            {% for user in user %}
-            <h2>Welcome, {{ user.first_name }}</h2>
-            {% endfor %}
+            <h1>PyPie Derby</h1>
         </div>
         <div class="navbar-links">
             <a href="/dashboard/{{ session['user_id'] }}">
@@ -33,7 +24,11 @@
     </nav>
 
     <div class="container mt-5">
-        <h2 class="mb-4">Re-plant Your Tree</h2>
+
+
+        <h2 class="mb-4">Edit {{ pie.name }}</h2>
+
+
         {% with messages = get_flashed_messages() %}
         {% if messages %}
         <div class="flash-messages">
@@ -44,18 +39,15 @@
         {% endif %}
         {% endwith %}
 
-        <form method="POST" action="/edit/{{ tree.id }}">
-            <label for="species">Species:</label>
-            <input type="text" class="form-control" name="species" value="{{ tree.species }}" required>
+        <form method="POST" action="/edit/{{ pie.id }}">
+            <label for="name">Species:</label>
+            <input type="text" class="form-control" name="name" value="{{ pie.name }}" required>
             <br>
-            <label for="location">Location:</label>
-            <input type="text" class="form-control" name="location" value="{{ tree.location }}" required>
+            <label for="filling">Location:</label>
+            <input type="text" class="form-control" name="filling" value="{{ pie.filling }}" required>
             <br>
-            <label for="reason">Reason:</label>
-            <textarea class="form-control" name="reason" required>{{ tree.reason }}</textarea>
-            <br>
-            <label for="date_planted">Date Planted:</label>
-            <input type="date" class="form-control" name="date_planted" value="{{ tree.date_planted }}" required>
+            <label for="crust">Reason:</label>
+            <textarea class="form-control" name="crust" required>{{ pie.crust }}</textarea>
             <br>
             <button type="submit" class="btn btn-primary">Update</button>
         </form>

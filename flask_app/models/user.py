@@ -11,9 +11,9 @@ class User:
         self.last_name = data['last_name']
         self.email = data['email']
         self.password = data['password']
-        self.trees = []
+        self.pies = []
         # self.comments=[]
-        self.visits = []
+        self.votes = []
 
     # Now we use class methods to query our database
 #Create
@@ -64,11 +64,11 @@ class User:
     def validate_user(user):
         is_valid = True  # We assume this is true
 
-        if len(user['first_name']) < 2:
-            flash("First name must be at least 2 characters.")
+        if len(user['first_name']) < 3:
+            flash("First name must be at least 3 characters.")
             is_valid = False
-        if len(user['last_name']) < 2:
-            flash("Last name must be at least 2 characters.")
+        if len(user['last_name']) < 3:
+            flash("Last name must be at least 3 characters.")
             is_valid = False
 
         # Email validation using email_validator library
@@ -102,49 +102,49 @@ class User:
 
 
     @classmethod
-    def get_visits_by_user(cls, id):
+    def get_votes_by_user(cls, id):
         query = """
-            SELECT visit.id AS visit_id, visit.first_name, visit.last_name
+            SELECT vote.id AS vote_id, vote.first_name, vote.last_name
             FROM users
-            LEFT JOIN visits ON users.id = visits.user_id
-            LEFT JOIN users visit ON visits.visit_id = visit.id
+            LEFT JOIN votes ON users.id = votes.user_id
+            LEFT JOIN users vote ON votes.vote_id = vote.id
             WHERE users.id = %(id)s;
         """
         results = connectToMySQL(cls.DB).query_db(query, {'id': id})
 
-        visits = []
+        votes = []
         for row in results:
-            visit_id = row['visit_id']
-            visit_first_name = row['first_name']
-            visit_last_name = row['last_name']
+            vote_id = row['vote_id']
+            vote_first_name = row['first_name']
+            vote_last_name = row['last_name']
 
-            visit_info = {
-                "id": visit_id,
-                "first_name": visit_first_name,
-                "last_name": visit_last_name
+            vote_info = {
+                "id": vote_id,
+                "first_name": vote_first_name,
+                "last_name": vote_last_name
             }
-            visit = User(visit_info)
-            visits.append(visit)
+            vote = User(vote_info)
+            votes.append(vote)
 
-        if not visits:  # Check if the list is empty
+        if not votes:  # Check if the list is empty
             return None
 
-        return visits
+        return votes
 
     @classmethod
-    def get_visits_by_tree(cls, id):
+    def get_votes_by_pie(cls, id):
         query = """
-            SELECT visit.first_name
+            SELECT vote.first_name
             FROM users
-            LEFT JOIN visits ON users.id = visits.user_id
-            LEFT JOIN users visit ON visits.visit_id = visit.id
+            LEFT JOIN votes ON users.id = votes.user_id
+            LEFT JOIN users vote ON votes.vote_id = vote.id
             WHERE users.id = %(id)s;
         """
         results = connectToMySQL(cls.DB).query_db(query, {'id': id})
 
-        visits = []
+        votes = []
         for row in results:
-            visit_user_name = row['first_name']
-            visits.append(visit_user_name)
+            vote_user_name = row['first_name']
+            votes.append(vote_user_name)
 
-        return visits
+        return votes

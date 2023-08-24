@@ -7,8 +7,8 @@ from flask import render_template, request, redirect, session, flash
 
 
 from flask_app.models.user import User
-from flask_app.models.tree import Tree
-from flask_app.models.visit import Visit
+from flask_app.models.pie import Pie
+from flask_app.models.vote import Vote
 # from flask_app.models.friend import Friend
 
 
@@ -74,16 +74,19 @@ def dashboard(user_id):
     if user is None:
         flash("User not found")
         return redirect('/')
+    
+    user_id = session['user_id']
+    user_pies = Pie.get_pies_by_user_id(user_id) 
 
-    all_the_trees = Tree.get_all_trees_with_creator()  # Fetch all trees with their creators
-    all_the_trees.reverse()
+    all_the_pies = Pie.get_all_pies_with_creator()  # Fetch all pies with their creators
+    all_the_pies.reverse()
 
-    visit_counts = {}  # Dictionary to store visit counts for each tree
+    vote_counts = {}  # Dictionary to store vote counts for each pie
 
-    for tree in all_the_trees:
-        visit_counts[tree.id] = Visit.get_visit_count(tree.id)
+    for pie in all_the_pies:
+        vote_counts[pie.id] = Vote.get_vote_count(pie.id)
 
-    return render_template("dashboard.html", user=user, all_the_trees=all_the_trees, visit_counts=visit_counts)
+    return render_template("dashboard.html", user=user, user_pies=user_pies)
 
 
 

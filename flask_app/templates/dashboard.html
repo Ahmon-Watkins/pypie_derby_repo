@@ -13,20 +13,12 @@
     <div>
         <nav class="navbar">
             <div class="navbar-brand">
-                <h1>Arbortrary</h1>
-                <p>A site to track randomly planted trees</p>
+                <h1>PyPie Derby</h1>
             </div>
+
             <div class="navbar-links">
-                <a href="/my_trees/{{ session['user_id'] }}">
-                    <button class="btn btn-secondary">My Trees</button>
-                </a>
-                {% for user in user %}
-                <h2>Welcome, {{ user.first_name }}</h2>
-                {% endfor %}
-            </div>
-            <div class="navbar-links">
-                <a href="/new/tree">
-                    <button class="btn btn-primary">Plant a tree</button>
+                <a href="/pies">
+                    <button class="btn btn-primary">PyPie Derby</button>
                 </a>
                 <a href="/">
                     <button class="btn btn-secondary">Logout</button>
@@ -45,39 +37,69 @@
             </div>
             {% endif %}
             {% endwith %}
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Species</th>
-                        <th>Planted By</th>
-                        <th>Visitors</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for one_tree in all_the_trees %}
-                    <tr>
-                        <td>{{ one_tree.species }}</td>
-                        <td>{{ one_tree.creator.first_name }} {{ one_tree.creator.last_name }}</td>
-                        <td>{{ visit_counts[one_tree.id] }}</td>
-                        <td>
-                            <a href="/show/{{ one_tree.id }}">
-                                <button class="btn btn-secondary">Details</button>
-                            </a>
-                        </td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="4">No posts available.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+
+            {% for user in user %}
+            <h2>PyPies by {{ user.first_name }}</h2>
+            {% endfor %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pie in user_pies %}
+                        <tr>
+                            <td>{{ pie.name }}</td>
+                            <td>
+                                <a href="/edit/{{ pie.id }}">
+                                    <button class="btn btn-secondary">Edit</button>
+                                </a>
+                                <form method="POST" action="/delete/{{ pie.id }}">
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="3">No pies available.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+            </div>
+            <div class="container">
+                <h2>Add New PyPie</h2>
+
+        
+                <form action="/create/pie" method="post" class="needs-validation" novalidate>
+                    <input type="hidden" name="user_id" value="{{ session['user_id'] }}">
+        
+                    <div class="form-group">
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" name="name" class="form-control" required>
+                    </div>
+        
+                    <div class="form-group">
+                        <label for="filling">Filling:</label>
+                        <input type="text" id="filling" name="filling" class="form-control" required>
+                    </div>
+        
+                    <div class="form-group">
+                        <label for="crust">Crust:</label>
+                        <input type="text" id="crust" name="crust" class="form-control" required>
+                    </div>
+        
+                    <button type="submit" class="btn btn-primary">Easy as Pie</button>
+                </form>
+            </div>
         </div>
-    </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 
 
